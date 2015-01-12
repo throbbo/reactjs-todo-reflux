@@ -6,13 +6,16 @@
 		undolist: [],
 		onItemsRemovedOnUndoList: function(list) {
 			this.undolist = list;
+			this.trigger(this.undolist);
 		},
 		onHandleUndoListCleared: function() {
 			this.undolist = [];
+			this.trigger(this.undolist);
 		},
         onPerformUndoOnUndoList: function(){
 			TodoActions.performUndoOnTodoList(this.undolist);
 			this.undolist = [];
+			this.trigger(this.undolist);
         },
 		onGetDefaultData: function() {
 			this.undolist = [];
