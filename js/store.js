@@ -1,5 +1,12 @@
-(function(Reflux, TodoActions, global) {
+(function(Reflux, TodoActions, UndoActions, global) {
     'use strict';
+
+	Array.prototype.indexOfField = function (propertyName, value) {
+		for (var i = 0; i < this.length; i++)
+			if (this[i][propertyName] === value)
+				return i;
+		return -1;
+	}
 
     // some variables and helpers for our fake database stuff
     var todoCounter = 0,
@@ -10,10 +17,11 @@
             return item.key === itemKey;
         });
     }
-
+    
     global.todoListStore = Reflux.createStore({
         // this will set up listeners to all publishers in TodoActions, using onKeyname (or keyname) as callbacks
         listenables: [TodoActions],
+		list: [],
         onEditItem: function(itemKey, newLabel) {
             var foundItem = getItemByKey(this.list,itemKey);
             if (!foundItem) {
@@ -30,10 +38,24 @@
                 label: label
             }].concat(this.list));
         },
+        onItemsRemovedOnTodoList: function(itemsRemoved) {
+			UndoActions.itemsRemovedOnUndoList(itemsRemoved);
+        },
+		onPerformUndoOnTodoList: function(undolist) {
+		    // Go through list of keys in list and remove from this.list, then remove undolist
+            this.list = this.list.concat(undolist);
+			this.updateList(this.list);
+		},
         onRemoveItem: function(itemKey) {
-            this.updateList(_.filter(this.list,function(item){
-                return item.key!==itemKey;
+			var itemRemoved = [];
+			this.updateList(_.filter(this.list,function(item){
+				if(item.key==itemKey) {
+					itemRemoved = item;
+				}
+				return item.key!=itemKey;
             }));
+			
+			this.onItemsRemovedOnTodoList( [itemRemoved]);
         },
         onToggleItem: function(itemKey) {
             var foundItem = getItemByKey(this.list,itemKey);
@@ -49,9 +71,17 @@
             }));
         },
         onClearCompleted: function() {
-            this.updateList(_.filter(this.list, function(item) {
-                return !item.isComplete;
+			var undolist = [];
+			this.updateList(_.filter(this.list, function(item) {
+				if(item.isComplete) {
+					undolist.push(item);
+					return false;
+				} 
+                
+				return true;
             }));
+			
+			this.onItemsRemovedOnTodoList(undolist)
         },
         // called whenever we change a list. normally this would mean a database API call
         updateList: function(list){
@@ -60,7 +90,7 @@
             this.list = list;
             this.trigger(list); // sends the updated list to all listening components (TodoApp)
         },
-        // this will be called by all listening components as they register their listeners
+		// this will be called by all listening components as they register their listeners
         getDefaultData: function() {
             var loadedList = localStorage.getItem(localStorageKey);
             if (!loadedList) {
@@ -69,17 +99,27 @@
                     key: todoCounter++,
                     created: new Date(),
                     isComplete: false,
-                    label: 'Rule the web'
+                    label: 'Rule the web',
+					isDeleted: false
                 }];
             } else {
-                this.list = _.map(JSON.parse(loadedList), function(item) {
-                    // just resetting the key property for each todo item
-                    item.key = todoCounter++;
-                    return item;
-                });
+				this.list = [];
+				
+				var list = JSON.parse(loadedList);
+				if(list.length>0 && typeof(list[0])=="object") {
+					this.list = _.map(list, function(item) {
+						if(!item) item = {};
+						if(typeof(item)!="object") item = {};
+						
+						// just resetting the key property for each todo item
+						item.key = todoCounter++;
+						return item;
+					});
+				}
             }
+			
             return this.list;
         }
     });
 
-})(window.Reflux, window.TodoActions, window);
+})(window.Reflux, window.TodoActions, window.UndoActions, window);

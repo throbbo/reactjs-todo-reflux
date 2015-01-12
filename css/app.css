@@ -8,3 +8,19 @@
 #addmany > a {
     color: rgb(61, 181, 144);
 }
+
+#undo {
+    color: red;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    text-align: center;
+}
+
+#undo > a {
+    display: inline-block;
+    background: silver;
+    padding: 4px 6px;
+    color: rgb(203, 36, 36);
+}
