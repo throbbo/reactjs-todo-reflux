@@ -41,6 +41,16 @@
         onItemsRemovedOnTodoList: function(itemsRemoved) {
 			UndoActions.itemsRemovedOnUndoList(itemsRemoved);
         },
+		onHandleAddMany: function(addManyItemsStr) {
+			addManyItemsStr = addManyItemsStr || "";
+			var list = addManyItemsStr.split("\n");
+			for(var i=0;i<list.length;i++) {
+				var label = list[i] || "";
+				if(label!="") {
+					this.onAddItem(label);
+				}
+			};
+		},
 		onPerformUndoOnTodoList: function(undolist) {
 		    // Go through list of keys in list and remove from this.list, then remove undolist
             this.list = this.list.concat(undolist);

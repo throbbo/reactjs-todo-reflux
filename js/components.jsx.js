@@ -186,7 +186,7 @@
             );
         }
     });
-
+	
     var routes = (
         <ReactRouter.Route handler={TodoApp}>
             <ReactRouter.Route name="All" path="/" handler={TodoMain} showing="all" />
@@ -198,5 +198,4 @@
     ReactRouter.run(routes, ReactRouter.HashLocation, function (Handler) {
         React.render(<Handler/>, document.getElementById('todoapp'));
     });
-
 })(window.React, window.ReactRouter, window.Reflux, window.TodoActions, window.todoListStore, window);

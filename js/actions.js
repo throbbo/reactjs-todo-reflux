@@ -15,8 +15,8 @@
 		"peformUndo",     // called by clicking Undo link in Undo
 		"addToUndoList",  // called by removing an item in TodoItem
 		"performUndoOnTodoList",
-		"itemsRemovedOnTodoList"
-		//"clearUndoList",  // called by removing an item in TodoItem
+		"itemsRemovedOnTodoList",
+		"handleAddMany" 
     ]);
 
     global.UndoActions = Reflux.createActions([
