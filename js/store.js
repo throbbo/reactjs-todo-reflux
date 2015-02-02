@@ -31,12 +31,16 @@
             this.updateList(this.list);
         },
         onAddItem: function(label) {
-            this.updateList([{
+			this.addItem(label);
+			this.sortAndRefreshList(this.list);
+        },
+        addItem: function(label) {
+			this.list.unshift({
                 key: todoCounter++,
                 created: new Date(),
                 isComplete: false,
                 label: label
-            }].concat(this.list));
+            });
         },
         onItemsRemovedOnTodoList: function(itemsRemoved) {
 			UndoActions.itemsRemovedOnUndoList(itemsRemoved);
@@ -47,14 +51,31 @@
 			for(var i=0;i<list.length;i++) {
 				var label = list[i] || "";
 				if(label!="") {
-					this.onAddItem(label);
+					this.addItem(label);
 				}
-			};
+			}; 
+			this.sortAndRefreshList(this.list)
+		},
+		sortAndRefreshList: function(list) {
+			var list2 = this.sortList(list);
+			
+            this.list = list2;
+			this.updateList(this.list);
+		},
+		sortList: function(list) {
+			//This will sort your array
+			function SortByKey(a, b){
+				var aKey = a.key;
+				var bKey = b.key; 
+				return ((+aKey > +bKey) ? -1 : ((+aKey < +bKey) ? 1 : 0));
+			}
+			list.sort(SortByKey);
+			return list;
 		},
 		onPerformUndoOnTodoList: function(undolist) {
 		    // Go through list of keys in list and remove from this.list, then remove undolist
-            this.list = this.list.concat(undolist);
-			this.updateList(this.list);
+			var list = this.list.concat(undolist);
+			this.sortAndRefreshList(list);
 		},
         onRemoveItem: function(itemKey) {
 			var itemRemoved = [];

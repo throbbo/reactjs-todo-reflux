@@ -6,7 +6,8 @@
         propTypes: {
             label: React.PropTypes.string.isRequired,
             isComplete: React.PropTypes.bool.isRequired,
-            id: React.PropTypes.number
+            id: React.PropTypes.number,
+            key: React.PropTypes.number
         },
         mixins: [React.addons.LinkedStateMixin], // exposes this.linkState used in render
         getInitialState: function() {
@@ -60,7 +61,7 @@
                 <li className={classes}>
                     <div className="view">
                         <input className="toggle" type="checkbox" checked={!!this.props.isComplete} onChange={this.handleToggle} />
-                        <label onDoubleClick={this.handleEditStart}>{this.props.label}</label>
+                        <label onDoubleClick={this.handleEditStart} title={this.props.id}>{this.props.label}</label>
                         <button className="destroy" onClick={this.handleDestroy}></button>
                     </div>
                     <input ref="editInput" className="edit" valueLink={this.linkState('editValue')} onKeyUp={this.handleValueChange} onBlur={this.handleBlur} />

@@ -10,16 +10,17 @@
         },
         handleAddMany: function() {
             TodoActions.handleAddMany( this.refs.addmanytextarea.getDOMNode().value );
+			this.refs.addmanytextarea.getDOMNode().value="";
         },
 		render: function() {
             return (
                 <div>
 					<div>
-						<textarea ref="addmanytextarea" id="addmanytextarea" rows="10" cols="75" placeholder="Add many items at once?"/>
-					</div>	
-					<div>
 						<a id="addmany" href="javascript:;" onClick={this.handleAddMany}>Add Many</a>
 					</div>
+					<div>
+						<textarea ref="addmanytextarea" id="addmanytextarea" rows="10" cols="75" placeholder="Add many items at once?"/>
+					</div>	
                </div>
             );
         }
